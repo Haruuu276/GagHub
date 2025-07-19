@@ -1,64 +1,32 @@
--- LocalScript (place in StarterPlayerScripts)
+local loadingScreen = script.Parent
+local background = loadingScreen:WaitForChild("Background")
+local seedImage = background:WaitForChild("SeedImage")
+local loadingText = background:WaitForChild("LoadingText")
 
--- Hide Roblox default UI
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+local TweenService = game:GetService("TweenService")
 
--- Get player and GUI
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local function updateProgressBar(progress)
+    loadingText.Text = "Loading Garden... " .. math.floor(progress) .. "%"
+    
+    -- simulate growth by scaling the seed image
+    seedImage.Size = UDim2.new(0, 100, 0, 100 + progress) -- stretch as it "grows"
+end
 
--- Create loading GUI
-local loadingScreen = Instance.new("ScreenGui")
-loadingScreen.Name = "LoadingScreen"
-loadingScreen.ResetOnSpawn = false
-loadingScreen.IgnoreGuiInset = true
-loadingScreen.Parent = playerGui
-
--- Background
-local bg = Instance.new("Frame")
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-bg.Parent = loadingScreen
-
--- Loading text
-local text = Instance.new("TextLabel")
-text.Size = UDim2.new(0.4, 0, 0.1, 0)
-text.Position = UDim2.new(0.3, 0, 0.45, 0)
-text.Text = "Loading"
-text.TextColor3 = Color3.fromRGB(255, 255, 255)
-text.BackgroundTransparency = 1
-text.TextScaled = true
-text.Font = Enum.Font.GothamBold
-text.Parent = bg
-
--- Animated dots
-spawn(function()
-    local dots = ""
-    while wait(0.5) do
-        if loadingScreen.Parent == nil then break end
-        dots = (#dots >= 3) and "" or dots .. "."
-        text.Text = "Loading" .. dots
+local function simulateLoading()
+    for i = 1, 100, 5 do
+        updateProgressBar(i)
+        wait(0.1) -- simulate delay
     end
-end)
-
--- Optional: Lock character movement
-if player.Character then
-    player.Character:WaitForChild("HumanoidRootPart").Anchored = true
+    
+    -- When loading is done, grow it into a plant
+    local growTween = TweenService:Create(seedImage, TweenInfo.new(1), {
+        Size = UDim2.new(0, 150, 0, 200),
+        ImageColor3 = Color3.fromRGB(34, 139, 34)
+    })
+    growTween:Play()
+    
+    wait(1.5)
+    loadingScreen:Destroy() -- remove loading screen
 end
 
-player.CharacterAdded:Connect(function(char)
-    char:WaitForChild("HumanoidRootPart").Anchored = true
-end)
-
--- Wait loading time
-wait(5)
-
--- Re-enable CoreGui and unlock player
-StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-if player.Character then
-    player.Character:WaitForChild("HumanoidRootPart").Anchored = false
-end
-
--- Remove loading screen
-loadingScreen:Destroy()
+simulateLoading()
