@@ -1,86 +1,70 @@
---// Services
-local TweenService = game:GetService("TweenService")
+-- Place this LocalScript under a ScreenGui
+
 local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
-local ContextActionService = game:GetService("ContextActionService")
-
--- Hide ALL CoreGui elements
-pcall(function()
-    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
-end)
-
--- Player setup
+local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
-local gui = Instance.new("ScreenGui")
-gui.Name = "GardenLoadingScreen"
-gui.IgnoreGuiInset = true
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
+local playerGui = player:WaitForChild("PlayerGui")
 
--- FULL INPUT LOCK
-local function blockAllInputs(actionName, inputState, inputObject)
-    return Enum.ContextActionResult.Sink
-end
-for _, inputType in ipairs(Enum.UserInputType:GetEnumItems()) do
-    ContextActionService:BindAction("BlockAllInputs", blockAllInputs, false, inputType)
-end
-for _, keyCode in ipairs(Enum.KeyCode:GetEnumItems()) do
-    ContextActionService:BindAction("BlockAllInputs", blockAllInputs, false, keyCode)
+-- Remove or hide top-left UI icons (assuming custom UI elements)
+local function hideIcons()
+	for _, v in pairs(playerGui:GetDescendants()) do
+		if v:IsA("ImageButton") or v:IsA("TextButton") then
+			if v.Name:lower():match("icon") or v.Name:lower():match("button") then
+				v.Visible = false
+			end
+		end
+	end
 end
 
--- Main background
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(1, 0, 1, 0)
-frame.BackgroundColor3 = Color3.fromRGB(203, 232, 202)
-frame.BorderSizePixel = 0
-frame.Parent = gui
+-- Create UI elements
+local screenGui = Instance.new("ScreenGui", playerGui)
+screenGui.Name = "GardenLoadingUI"
 
--- Title
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0.3, 0)
-title.Position = UDim2.new(0, 0, 0.35, 0)
-title.BackgroundTransparency = 1
-title.Text = "🌼 Growing Your Garden..."
-title.TextColor3 = Color3.fromRGB(34, 85, 34)
-title.Font = Enum.Font.GothamBold
-title.TextScaled = true
-title.Parent = frame
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.BackgroundColor3 = Color3.fromRGB(216, 236, 209)
+mainFrame.Size = UDim2.new(1, 0, 1, 0)
 
--- Flower Icon
-local flower = Instance.new("ImageLabel")
-flower.Size = UDim2.new(0, 100, 0, 100)
-flower.Position = UDim2.new(0.5, -50, 0.25, -50)
-flower.Image = "rbxassetid://6031097225"
-flower.BackgroundTransparency = 1
-flower.Parent = frame
+local flowerLabel = Instance.new("TextLabel", mainFrame)
+flowerLabel.Text = "🌼"
+flowerLabel.TextScaled = true
+flowerLabel.Size = UDim2.new(0, 100, 0, 100)
+flowerLabel.Position = UDim2.new(0.5, -50, 0.3, -50)
+flowerLabel.BackgroundTransparency = 1
+flowerLabel.Font = Enum.Font.SourceSans
+flowerLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
 
--- Loading Bar
-local barBG = Instance.new("Frame")
-barBG.Size = UDim2.new(0.5, 0, 0.05, 0)
-barBG.Position = UDim2.new(0.25, 0, 0.65, 0)
-barBG.BackgroundColor3 = Color3.fromRGB(160, 200, 160)
-barBG.BorderSizePixel = 0
-barBG.Parent = frame
+local loadingText = Instance.new("TextLabel", mainFrame)
+loadingText.Text = "Growing Your Garden..."
+loadingText.TextScaled = true
+loadingText.Size = UDim2.new(0.6, 0, 0.1, 0)
+loadingText.Position = UDim2.new(0.2, 0, 0.45, 0)
+loadingText.BackgroundTransparency = 1
+loadingText.Font = Enum.Font.GothamBold
+loadingText.TextColor3 = Color3.fromRGB(29, 79, 33)
 
-local barFill = Instance.new("Frame")
-barFill.Size = UDim2.new(0, 0, 1, 0)
-barFill.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
-barFill.BorderSizePixel = 0
-barFill.Parent = barBG
+-- Progress Bar Container
+local progressBarBG = Instance.new("Frame", mainFrame)
+progressBarBG.Size = UDim2.new(0.6, 0, 0.05, 0)
+progressBarBG.Position = UDim2.new(0.2, 0, 0.55, 0)
+progressBarBG.BackgroundColor3 = Color3.fromRGB(192, 216, 181)
+progressBarBG.BorderSizePixel = 0
+progressBarBG.ClipsDescendants = true
+progressBarBG.BackgroundTransparency = 0
 
--- Tween animation
-local tweenInfo = TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-local tween = TweenService:Create(barFill, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
+-- Actual progress bar
+local progressBar = Instance.new("Frame", progressBarBG)
+progressBar.Size = UDim2.new(0, 0, 1, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(44, 122, 44)
+progressBar.BorderSizePixel = 0
+
+-- Animate the progress bar
+local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+local goal = {Size = UDim2.new(0.7, 0, 1, 0)}
+local tween = TweenService:Create(progressBar, tweenInfo, goal)
+
+-- Start the animation after a short delay
+task.wait(0.5)
 tween:Play()
 
--- Cleanup after tween
-tween.Completed:Connect(function()
-    wait(0.5)
-    gui:Destroy()
-    ContextActionService:UnbindAction("BlockAllInputs")
-
-    -- Ibalik CoreGui
-    pcall(function()
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-    end)
-end)
+-- Hide icons (custom function)
+hideIcons()
