@@ -4,6 +4,11 @@ local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local ContextActionService = game:GetService("ContextActionService")
 
+--// Hide ALL CoreGui elements (menu, chat, settings, leaderboard)
+pcall(function()
+    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+end)
+
 --// Player setup
 local player = Players.LocalPlayer
 local gui = Instance.new("ScreenGui")
@@ -12,16 +17,10 @@ gui.IgnoreGuiInset = true
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
---// Disable Topbar (Leave, Reset, Chat toggle)
-pcall(function()
-    StarterGui:SetCore("TopbarEnabled", false)
-end)
-
 --// FULL INPUT LOCK
 local function blockAllInputs(actionName, inputState, inputObject)
     return Enum.ContextActionResult.Sink
 end
-
 for _, inputType in ipairs(Enum.UserInputType:GetEnumItems()) do
     ContextActionService:BindAction("BlockAllInputs", blockAllInputs, false, inputType)
 end
@@ -67,19 +66,4 @@ local barFill = Instance.new("Frame")
 barFill.Size = UDim2.new(0, 0, 1, 0)
 barFill.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
 barFill.BorderSizePixel = 0
-barFill.Parent = barBG
-
---// Tween animation
-local tweenInfo = TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-local tween = TweenService:Create(barFill, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
-tween:Play()
-
---// Cleanup after tween
-tween.Completed:Connect(function()
-    wait(0.5)
-    gui:Destroy()
-    ContextActionService:UnbindAction("BlockAllInputs")
-    pcall(function()
-        StarterGui:SetCore("TopbarEnabled", true)
-    end)
-end)
+barFill.Par
