@@ -1,44 +1,64 @@
--- Fullscreen "Growing Your Garden..." loading screen
+-- LocalScript (place in StarterPlayerScripts)
 
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local player = Players.LocalPlayer
+-- Hide Roblox default UI
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+
+-- Get player and GUI
+local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Create a new ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "FullGardenLoading"
-screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true -- Ensure it fills the entire screen
-screenGui.Parent = playerGui
+-- Create loading GUI
+local loadingScreen = Instance.new("ScreenGui")
+loadingScreen.Name = "LoadingScreen"
+loadingScreen.ResetOnSpawn = false
+loadingScreen.IgnoreGuiInset = true
+loadingScreen.Parent = playerGui
 
--- Background frame (fullscreen)
-local background = Instance.new("Frame")
-background.Size = UDim2.new(1, 0, 1, 0)
-background.Position = UDim2.new(0, 0, 0, 0)
-background.BackgroundColor3 = Color3.fromRGB(216, 236, 209)
-background.Parent = screenGui
+-- Background
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+bg.Parent = loadingScreen
 
--- Flower icon
-local flower = Instance.new("ImageLabel")
-flower.Size = UDim2.new(0, 80, 0, 80)
-flower.Position = UDim2.new(0.5, -40, 0.35, -40)
-flower.BackgroundTransparency = 1
-flower.Image = "rbxassetid://7733960981" -- You can use a flower image or emoji
-flower.Parent = background
+-- Loading text
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(0.4, 0, 0.1, 0)
+text.Position = UDim2.new(0.3, 0, 0.45, 0)
+text.Text = "Loading"
+text.TextColor3 = Color3.fromRGB(255, 255, 255)
+text.BackgroundTransparency = 1
+text.TextScaled = true
+text.Font = Enum.Font.GothamBold
+text.Parent = bg
 
--- Title text
-local label = Instance.new("TextLabel")
-label.Text = "Growing Your Garden..."
-label.Font = Enum.Font.GothamBold
-label.TextScaled = true
-label.Size = UDim2.new(0.6, 0, 0.1, 0)
-label.Position = UDim2.new(0.2, 0, 0.47, 0)
-label.BackgroundTransparency = 1
-label.TextColor3 = Color3.fromRGB(29, 79, 33)
-label.Parent = background
+-- Animated dots
+spawn(function()
+    local dots = ""
+    while wait(0.5) do
+        if loadingScreen.Parent == nil then break end
+        dots = (#dots >= 3) and "" or dots .. "."
+        text.Text = "Loading" .. dots
+    end
+end)
 
--- Progress bar background
-local progressBarBG = Instance.new("Frame")
-progressBarBG.Size = UDim2.new(0.6, 0, 0.04, 0)
-progressBarBG.Position = UDim2.new(0
+-- Optional: Lock character movement
+if player.Character then
+    player.Character:WaitForChild("HumanoidRootPart").Anchored = true
+end
+
+player.CharacterAdded:Connect(function(char)
+    char:WaitForChild("HumanoidRootPart").Anchored = true
+end)
+
+-- Wait loading time
+wait(5)
+
+-- Re-enable CoreGui and unlock player
+StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+if player.Character then
+    player.Character:WaitForChild("HumanoidRootPart").Anchored = false
+end
+
+-- Remove loading screen
+loadingScreen:Destroy()
