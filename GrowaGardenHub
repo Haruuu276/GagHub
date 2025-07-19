@@ -1,70 +1,44 @@
--- Place this LocalScript under a ScreenGui
+-- Fullscreen "Growing Your Garden..." loading screen
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Remove or hide top-left UI icons (assuming custom UI elements)
-local function hideIcons()
-	for _, v in pairs(playerGui:GetDescendants()) do
-		if v:IsA("ImageButton") or v:IsA("TextButton") then
-			if v.Name:lower():match("icon") or v.Name:lower():match("button") then
-				v.Visible = false
-			end
-		end
-	end
-end
+-- Create a new ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FullGardenLoading"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true -- Ensure it fills the entire screen
+screenGui.Parent = playerGui
 
--- Create UI elements
-local screenGui = Instance.new("ScreenGui", playerGui)
-screenGui.Name = "GardenLoadingUI"
+-- Background frame (fullscreen)
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1, 0, 1, 0)
+background.Position = UDim2.new(0, 0, 0, 0)
+background.BackgroundColor3 = Color3.fromRGB(216, 236, 209)
+background.Parent = screenGui
 
-local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.BackgroundColor3 = Color3.fromRGB(216, 236, 209)
-mainFrame.Size = UDim2.new(1, 0, 1, 0)
+-- Flower icon
+local flower = Instance.new("ImageLabel")
+flower.Size = UDim2.new(0, 80, 0, 80)
+flower.Position = UDim2.new(0.5, -40, 0.35, -40)
+flower.BackgroundTransparency = 1
+flower.Image = "rbxassetid://7733960981" -- You can use a flower image or emoji
+flower.Parent = background
 
-local flowerLabel = Instance.new("TextLabel", mainFrame)
-flowerLabel.Text = "🌼"
-flowerLabel.TextScaled = true
-flowerLabel.Size = UDim2.new(0, 100, 0, 100)
-flowerLabel.Position = UDim2.new(0.5, -50, 0.3, -50)
-flowerLabel.BackgroundTransparency = 1
-flowerLabel.Font = Enum.Font.SourceSans
-flowerLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
+-- Title text
+local label = Instance.new("TextLabel")
+label.Text = "Growing Your Garden..."
+label.Font = Enum.Font.GothamBold
+label.TextScaled = true
+label.Size = UDim2.new(0.6, 0, 0.1, 0)
+label.Position = UDim2.new(0.2, 0, 0.47, 0)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.fromRGB(29, 79, 33)
+label.Parent = background
 
-local loadingText = Instance.new("TextLabel", mainFrame)
-loadingText.Text = "Growing Your Garden..."
-loadingText.TextScaled = true
-loadingText.Size = UDim2.new(0.6, 0, 0.1, 0)
-loadingText.Position = UDim2.new(0.2, 0, 0.45, 0)
-loadingText.BackgroundTransparency = 1
-loadingText.Font = Enum.Font.GothamBold
-loadingText.TextColor3 = Color3.fromRGB(29, 79, 33)
-
--- Progress Bar Container
-local progressBarBG = Instance.new("Frame", mainFrame)
-progressBarBG.Size = UDim2.new(0.6, 0, 0.05, 0)
-progressBarBG.Position = UDim2.new(0.2, 0, 0.55, 0)
-progressBarBG.BackgroundColor3 = Color3.fromRGB(192, 216, 181)
-progressBarBG.BorderSizePixel = 0
-progressBarBG.ClipsDescendants = true
-progressBarBG.BackgroundTransparency = 0
-
--- Actual progress bar
-local progressBar = Instance.new("Frame", progressBarBG)
-progressBar.Size = UDim2.new(0, 0, 1, 0)
-progressBar.BackgroundColor3 = Color3.fromRGB(44, 122, 44)
-progressBar.BorderSizePixel = 0
-
--- Animate the progress bar
-local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-local goal = {Size = UDim2.new(0.7, 0, 1, 0)}
-local tween = TweenService:Create(progressBar, tweenInfo, goal)
-
--- Start the animation after a short delay
-task.wait(0.5)
-tween:Play()
-
--- Hide icons (custom function)
-hideIcons()
+-- Progress bar background
+local progressBarBG = Instance.new("Frame")
+progressBarBG.Size = UDim2.new(0.6, 0, 0.04, 0)
+progressBarBG.Position = UDim2.new(0
