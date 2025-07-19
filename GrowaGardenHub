@@ -2,8 +2,9 @@
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
 
---// Player and GUI setup
+--// Player setup
 local player = Players.LocalPlayer
 local gui = Instance.new("ScreenGui")
 gui.Name = "GardenLoadingScreen"
@@ -11,17 +12,21 @@ gui.IgnoreGuiInset = true
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
---// Block input
-UserInputService.ModalEnabled = true
+--// FULL input lock
+local function blockAllInput(actionName, inputState, inputObject)
+	return Enum.ContextActionResult.Sink
+end
+ContextActionService:BindAction("BlockAllInput", blockAllInput, false, unpack(Enum.UserInputType:GetEnumItems()))
+ContextActionService:BindAction("BlockAllInput", blockAllInput, false, unpack(Enum.KeyCode:GetEnumItems()))
 
---// Main Frame
+--// Main background
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(1, 0, 1, 0)
-frame.BackgroundColor3 = Color3.fromRGB(203, 232, 202) -- light green
+frame.BackgroundColor3 = Color3.fromRGB(203, 232, 202)
 frame.BorderSizePixel = 0
 frame.Parent = gui
 
---// Garden Aesthetic Text
+--// Title
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0.3, 0)
 title.Position = UDim2.new(0, 0, 0.35, 0)
@@ -32,15 +37,15 @@ title.Font = Enum.Font.GothamBold
 title.TextScaled = true
 title.Parent = frame
 
---// Decorative Flower
+--// Flower Icon
 local flower = Instance.new("ImageLabel")
 flower.Size = UDim2.new(0, 100, 0, 100)
 flower.Position = UDim2.new(0.5, -50, 0.25, -50)
-flower.Image = "rbxassetid://6031097225" -- Flower icon (or any aesthetic image)
+flower.Image = "rbxassetid://6031097225"
 flower.BackgroundTransparency = 1
 flower.Parent = frame
 
---// Loading Bar Frame
+--// Loading Bar
 local barBG = Instance.new("Frame")
 barBG.Size = UDim2.new(0.5, 0, 0.05, 0)
 barBG.Position = UDim2.new(0.25, 0, 0.65, 0)
@@ -54,14 +59,14 @@ barFill.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
 barFill.BorderSizePixel = 0
 barFill.Parent = barBG
 
---// Tween animation for loading
+--// Tween animation
 local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 local tween = TweenService:Create(barFill, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
 tween:Play()
 
---// Wait and remove GUI
+--// Cleanup after tween
 tween.Completed:Connect(function()
 	wait(0.5)
 	gui:Destroy()
-	UserInputService.ModalEnabled = false
+	ContextActionService:UnbindAction("BlockAllInput")
 end)
