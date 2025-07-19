@@ -1,7 +1,6 @@
 --// Services
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 local ContextActionService = game:GetService("ContextActionService")
 
 --// Player setup
@@ -12,12 +11,19 @@ gui.IgnoreGuiInset = true
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
---// FULL input lock
-local function blockAllInput(actionName, inputState, inputObject)
-	return Enum.ContextActionResult.Sink
+--// TOTAL INPUT LOCK
+local function blockAllInputs(actionName, inputState, inputObject)
+    return Enum.ContextActionResult.Sink
 end
-ContextActionService:BindAction("BlockAllInput", blockAllInput, false, unpack(Enum.UserInputType:GetEnumItems()))
-ContextActionService:BindAction("BlockAllInput", blockAllInput, false, unpack(Enum.KeyCode:GetEnumItems()))
+
+-- I-bind lahat ng InputType at KeyCodes para siguradong walang makakagalaw
+for _, inputType in ipairs(Enum.UserInputType:GetEnumItems()) do
+    ContextActionService:BindAction("BlockAllInputs", blockAllInputs, false, inputType)
+end
+
+for _, keyCode in ipairs(Enum.KeyCode:GetEnumItems()) do
+    ContextActionService:BindAction("BlockAllInputs", blockAllInputs, false, keyCode)
+end
 
 --// Main background
 local frame = Instance.new("Frame")
@@ -60,13 +66,13 @@ barFill.BorderSizePixel = 0
 barFill.Parent = barBG
 
 --// Tween animation
-local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+local tweenInfo = TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 local tween = TweenService:Create(barFill, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
 tween:Play()
 
 --// Cleanup after tween
 tween.Completed:Connect(function()
-	wait(0.5)
-	gui:Destroy()
-	ContextActionService:UnbindAction("BlockAllInput")
+    wait(0.5)
+    gui:Destroy()
+    ContextActionService:UnbindAction("BlockAllInputs")
 end)
