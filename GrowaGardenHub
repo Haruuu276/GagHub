@@ -1,0 +1,56 @@
+-- Services
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GardenLoadingScreen"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Background
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.fromRGB(240, 248, 232)
+bg.BorderSizePixel = 0
+bg.Parent = screenGui
+
+-- Aesthetic Title
+local title = Instance.new("TextLabel")
+title.Text = "🌼 Grow A Garden 🌼"
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(90, 140, 90)
+title.TextSize = 48
+title.AnchorPoint = Vector2.new(0.5, 0)
+title.Position = UDim2.new(0.5, 0, 0.15, 0)
+title.BackgroundTransparency = 1
+title.Parent = bg
+
+-- Loading Bar Background
+local barBg = Instance.new("Frame")
+barBg.Size = UDim2.new(0.5, 0, 0.05, 0)
+barBg.Position = UDim2.new(0.25, 0, 0.6, 0)
+barBg.BackgroundColor3 = Color3.fromRGB(200, 220, 200)
+barBg.BorderSizePixel = 0
+barBg.Parent = bg
+barBg.ClipsDescendants = true
+barBg:TweenSize(UDim2.new(0.5, 0, 0.05, 0), "Out", "Quart", 0.5)
+
+-- Loading Bar Fill
+local barFill = Instance.new("Frame")
+barFill.Size = UDim2.new(0, 0, 1, 0)
+barFill.BackgroundColor3 = Color3.fromRGB(100, 170, 100)
+barFill.BorderSizePixel = 0
+barFill.Parent = barBg
+
+-- Loading Text
+local loadingText = Instance.new("TextLabel")
+loadingText.Text = "Loading..."
+loadingText.Font = Enum.Font.Gotham
+loadingText.TextColor3 = Color3.fromRGB(80, 120, 80)
+loadingText.TextSize = 24
+loadingText.AnchorPoint = Vector2.new(0.5, 0)
+loadingText.Position = UDim2.new(0.5, 0, 0.68, 0)
+loadingText.Background
