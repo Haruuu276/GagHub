@@ -9,27 +9,35 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "GardenLoadingScreen"
 gui.IgnoreGuiInset = true
 gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = player:WaitForChild("PlayerGui")
 
---// TOTAL INPUT LOCK
+--// FULL INPUT LOCK (all input sinks)
 local function blockAllInputs(actionName, inputState, inputObject)
     return Enum.ContextActionResult.Sink
 end
 
--- I-bind lahat ng InputType at KeyCodes para siguradong walang makakagalaw
 for _, inputType in ipairs(Enum.UserInputType:GetEnumItems()) do
     ContextActionService:BindAction("BlockAllInputs", blockAllInputs, false, inputType)
 end
-
 for _, keyCode in ipairs(Enum.KeyCode:GetEnumItems()) do
     ContextActionService:BindAction("BlockAllInputs", blockAllInputs, false, keyCode)
 end
+
+--// Transparent overlay to block all clicks (even coregui)
+local inputBlocker = Instance.new("Frame")
+inputBlocker.Size = UDim2.new(1, 0, 1, 0)
+inputBlocker.BackgroundTransparency = 1
+inputBlocker.ZIndex = 10000 -- always on top
+inputBlocker.Active = true
+inputBlocker.Parent = gui
 
 --// Main background
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(1, 0, 1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(203, 232, 202)
 frame.BorderSizePixel = 0
+frame.ZIndex = 5
 frame.Parent = gui
 
 --// Title
@@ -41,6 +49,7 @@ title.Text = "🌼 Growing Your Garden..."
 title.TextColor3 = Color3.fromRGB(34, 85, 34)
 title.Font = Enum.Font.GothamBold
 title.TextScaled = true
+title.ZIndex = 6
 title.Parent = frame
 
 --// Flower Icon
@@ -49,6 +58,7 @@ flower.Size = UDim2.new(0, 100, 0, 100)
 flower.Position = UDim2.new(0.5, -50, 0.25, -50)
 flower.Image = "rbxassetid://6031097225"
 flower.BackgroundTransparency = 1
+flower.ZIndex = 6
 flower.Parent = frame
 
 --// Loading Bar
@@ -57,12 +67,14 @@ barBG.Size = UDim2.new(0.5, 0, 0.05, 0)
 barBG.Position = UDim2.new(0.25, 0, 0.65, 0)
 barBG.BackgroundColor3 = Color3.fromRGB(160, 200, 160)
 barBG.BorderSizePixel = 0
+barBG.ZIndex = 6
 barBG.Parent = frame
 
 local barFill = Instance.new("Frame")
 barFill.Size = UDim2.new(0, 0, 1, 0)
 barFill.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
 barFill.BorderSizePixel = 0
+barFill.ZIndex = 7
 barFill.Parent = barBG
 
 --// Tween animation
