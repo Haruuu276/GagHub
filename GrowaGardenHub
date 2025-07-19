@@ -1,56 +1,67 @@
--- Services
+--// Services
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+--// Player and GUI setup
 local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "GardenLoadingScreen"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
--- GUI Setup
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "GardenLoadingScreen"
-screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true
-screenGui.Parent = player:WaitForChild("PlayerGui")
+--// Block input
+UserInputService.ModalEnabled = true
 
--- Background
-local bg = Instance.new("Frame")
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundColor3 = Color3.fromRGB(240, 248, 232)
-bg.BorderSizePixel = 0
-bg.Parent = screenGui
+--// Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1, 0, 1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(203, 232, 202) -- light green
+frame.BorderSizePixel = 0
+frame.Parent = gui
 
--- Aesthetic Title
+--// Garden Aesthetic Text
 local title = Instance.new("TextLabel")
-title.Text = "🌼 Grow A Garden 🌼"
-title.Font = Enum.Font.GothamBold
-title.TextColor3 = Color3.fromRGB(90, 140, 90)
-title.TextSize = 48
-title.AnchorPoint = Vector2.new(0.5, 0)
-title.Position = UDim2.new(0.5, 0, 0.15, 0)
+title.Size = UDim2.new(1, 0, 0.3, 0)
+title.Position = UDim2.new(0, 0, 0.35, 0)
 title.BackgroundTransparency = 1
-title.Parent = bg
+title.Text = "🌼 Growing Your Garden..."
+title.TextColor3 = Color3.fromRGB(34, 85, 34)
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+title.Parent = frame
 
--- Loading Bar Background
-local barBg = Instance.new("Frame")
-barBg.Size = UDim2.new(0.5, 0, 0.05, 0)
-barBg.Position = UDim2.new(0.25, 0, 0.6, 0)
-barBg.BackgroundColor3 = Color3.fromRGB(200, 220, 200)
-barBg.BorderSizePixel = 0
-barBg.Parent = bg
-barBg.ClipsDescendants = true
-barBg:TweenSize(UDim2.new(0.5, 0, 0.05, 0), "Out", "Quart", 0.5)
+--// Decorative Flower
+local flower = Instance.new("ImageLabel")
+flower.Size = UDim2.new(0, 100, 0, 100)
+flower.Position = UDim2.new(0.5, -50, 0.25, -50)
+flower.Image = "rbxassetid://6031097225" -- Flower icon (or any aesthetic image)
+flower.BackgroundTransparency = 1
+flower.Parent = frame
 
--- Loading Bar Fill
+--// Loading Bar Frame
+local barBG = Instance.new("Frame")
+barBG.Size = UDim2.new(0.5, 0, 0.05, 0)
+barBG.Position = UDim2.new(0.25, 0, 0.65, 0)
+barBG.BackgroundColor3 = Color3.fromRGB(160, 200, 160)
+barBG.BorderSizePixel = 0
+barBG.Parent = frame
+
 local barFill = Instance.new("Frame")
 barFill.Size = UDim2.new(0, 0, 1, 0)
-barFill.BackgroundColor3 = Color3.fromRGB(100, 170, 100)
+barFill.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
 barFill.BorderSizePixel = 0
-barFill.Parent = barBg
+barFill.Parent = barBG
 
--- Loading Text
-local loadingText = Instance.new("TextLabel")
-loadingText.Text = "Loading..."
-loadingText.Font = Enum.Font.Gotham
-loadingText.TextColor3 = Color3.fromRGB(80, 120, 80)
-loadingText.TextSize = 24
-loadingText.AnchorPoint = Vector2.new(0.5, 0)
-loadingText.Position = UDim2.new(0.5, 0, 0.68, 0)
-loadingText.Background
+--// Tween animation for loading
+local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+local tween = TweenService:Create(barFill, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
+tween:Play()
+
+--// Wait and remove GUI
+tween.Completed:Connect(function()
+	wait(0.5)
+	gui:Destroy()
+	UserInputService.ModalEnabled = false
+end)
